@@ -1,0 +1,67 @@
+NOTE: 
+
+  mod_perl 1.99_10 (the current CVS version) is required for 
+  this module to work as expected.
+
+  additionally, apache 2.1 (the current experimental version
+  from CVS, not -r APACHE_2_0_BRANCH) is also required for
+  this module to work as expected.
+
+  even with both of those, there are no guarantees and it 
+  still might not work.  
+
+  you can get the recent CVS sources via
+
+    $ cvs -d":pserver:anoncvs@cvs.apache.org:/home/cvspublic" checkout modperl-2.0
+    $ cvs -d":pserver:anoncvs@cvs.apache.org:/home/cvspublic" checkout httpd-2.0
+
+  see 
+
+    http://perl.apache.org/contribute/cvs_howto.html
+    http://httpd.apache.org/dev/anoncvs.txt
+
+  for detailed instructions on how to use apache.org's anonymous CVS 
+
+  you can also get recent CVS snapshots at
+
+    http://cvs.apache.org/snapshots/modperl-2.0/
+    http://cvs.apache.org/snapshots/httpd-2.0/
+
+
+INSTALLATION:
+
+this module follows the standard 
+
+  $ perl Makefile.PL
+  $ make
+  $ su
+  # make install
+
+routine.
+
+if you want to run the tests, you'll need to do something similar
+to the following
+
+  $ export APACHE=/usr/local/apache2/bin/httpd
+  $ export APXS=/usr/local/apache2/bin/apxs
+  $ make test
+
+whether you choose to specify httpd or apxs depends on whether
+or not your installation is has mod_so, so you may need one or
+the other or both.
+
+you can also configure the test suite when building the Makefile
+
+  $ perl Makefile.PL -apxs /usr/local/apache2/bin/apxs
+
+run 
+
+  $ t/TEST -help 
+
+or see the README in the Apache-Test distribtion for more options
+
+of course, this module is made to run under Apache 2.1 and mod_perl
+2.0 so you'll need those as well, again preferably recent copies
+complied from CVS.  Perl 5.8.0 is also a good idea.
+
+have fun.

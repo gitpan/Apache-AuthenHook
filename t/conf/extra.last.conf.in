@@ -1,0 +1,50 @@
+LogLevel debug
+
+# these don't default to handler(), so we need to pre-declare them
+PerlModule My::Basic1
+PerlModule My::Digest2
+PerlModule My::Redirect
+
+PerlLoadModule Apache::AuthenHook
+
+Alias /digest @DocumentRoot@
+<Location /digest>
+  Require valid-user
+  AuthType Digest
+  AuthName realm1
+
+  AuthDigestProvider My::Digest1 file My::Digest2::digest
+
+  AuthUserFile realm1
+</Location>
+
+Alias /basic @DocumentRoot@
+<Location /basic>
+  Require valid-user
+  AuthType Basic
+  AuthName foorealm
+
+  AuthBasicProvider My::Basic1::basic file My::Basic2
+
+  AuthUserFile realm1
+</Location>
+
+# not .htaccess for make dist
+AccessFileName htaccess
+
+<Directory @DocumentRoot@>
+  AllowOverride AuthConfig
+</Directory>
+
+<Location /redirect>
+  Require valid-user
+  AuthType Digest
+  AuthName realm1
+
+  AuthDigestProvider My::Digest1 file My::Digest2::digest
+
+  AuthUserFile realm1
+
+  PerlResponseHandler My::Redirect
+  SetHandler modperl
+</Location>

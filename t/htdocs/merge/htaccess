@@ -1,0 +1,2 @@
+AuthDigestProvider My::TestUser
+AuthBasicProvider My::TestUser
