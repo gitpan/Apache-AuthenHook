@@ -2,3 +2,12 @@ Revision history for Perl extension Apache::AuthenHook
 
 2.00_01  05.22.2003
   - original version
+
+2.00_02  06.25.2003
+  - minor doc changes (note prefork only)
+
+2.00_03  04.05.2004
+  - minor test format changes
+  - use MP_TRACE_a for internal trace routines
+  - bump minimum mod_perl version to 1.99_11 in preparation for
+    future access to Apache AUTH_* constants

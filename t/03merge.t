@@ -3,6 +3,7 @@ use warnings FATAL => 'all';
 
 use Apache::Test;
 use Apache::TestRequest;
+use Apache::TestUtil;
 
 # test DIR_MERGE logic
 
@@ -12,25 +13,37 @@ plan tests => 6, (have_lwp &&
 
 my $url = '/digest/merge/index.html';
 my $response = GET $url;
-ok $response->code == 401;
+ok t_cmp(401,
+         $response->code,
+         "GET $url");
 
 # authenticated
 $response = GET $url, username => 'testuser', password => 'testpass';
-ok $response->code == 200;
+ok t_cmp(200,
+         $response->code,
+         "GET $url, username => 'testuser', password => 'testpass'");
 
 # bad pass
 $response = GET $url, username => 'testuser', password => 'foo';
-ok $response->code == 401;
+ok t_cmp(401,
+         $response->code,
+         "GET $url, username => 'testuser', password => 'foo'");
 
 $url = '/basic/merge/index.html';
 
 $response = GET $url;
-ok $response->code == 401;
+ok t_cmp(401,
+         $response->code,
+         "GET $url");
 
 # authenticated
 $response = GET $url, username => 'testuser', password => 'testpass';
-ok $response->code == 200;
+ok t_cmp(200,
+         $response->code,
+         "GET $url, username => 'testuser', password => 'testpass'");
 
 # bad pass
 $response = GET $url, username => 'testuser', password => 'foo';
-ok $response->code == 401;
+ok t_cmp(401,
+         $response->code,
+         "GET $url, username => 'testuser', password => 'foo'");

@@ -171,8 +171,9 @@ see the files in the test suite for more examples.
 
 NOTES
 
-This has been tested under the prefork MPM only, using 
-mostly Perl 5.9.0 (as well as some 5.8.0) - YMMV.
+This has been tested under the prefork MPM only, using
+mostly Perl 5.9.0 (as well as some 5.8.0).  It will not
+work under threaded MPMs - soon, just not yet.
 
 FEATURES/BUGS
 

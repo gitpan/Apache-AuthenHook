@@ -21,7 +21,7 @@ static int call_provider(request_rec *r, const char *type,
 
   if (! apr_table_get(r->notes, "AUTHEN_HOOK_INIT_REQUEST")) {
 
-    /* initialize a clean copy of the Perl provider array (eg, @{$cfg->{basic}})
+    /* initialize a clean copy of the Perl provider array
      * (eg, @{$cfg->{basic}}) on each request.  because this function is
      * the sole function registered for all Perl providers, it is 
      * called multiple times per request - caching the provider array is 
@@ -31,7 +31,7 @@ static int call_provider(request_rec *r, const char *type,
      * oh, and using r->notes instead of per-request cleanups helps us with
      * internal redirects, which is a nice bonus.  */
 
-    MP_TRACE_d(MP_FUNC, 
+    MP_TRACE_a(MP_FUNC, 
                "Apache::AuthenHook - initializing request\n");
 
     /* first, get the config object ($cfg) populated by the Perl
@@ -42,7 +42,7 @@ static int call_provider(request_rec *r, const char *type,
                                         r->server, r->per_dir_config);
   
     if (! cfg) {
-      MP_TRACE_d(MP_FUNC, 
+      MP_TRACE_a(MP_FUNC, 
                  "Apache::AuthenHook - config object not found\n");
   
       return AUTH_GENERAL_ERROR;
@@ -59,12 +59,12 @@ static int call_provider(request_rec *r, const char *type,
 
       providers = av_make(av_len(av)+1, AvARRAY(av));
 
-      MP_TRACE_d(MP_FUNC, 
+      MP_TRACE_a(MP_FUNC, 
                  "Apache::AuthenHook - found %d providers\n", 
                  av_len(av)+1);
     }
     else {
-      MP_TRACE_d(MP_FUNC, 
+      MP_TRACE_a(MP_FUNC, 
                  "Apache::AuthenHook - provider array not found\n");
 
       return AUTH_GENERAL_ERROR;
@@ -79,7 +79,7 @@ static int call_provider(request_rec *r, const char *type,
   provider = av_shift(providers);
 
   if (! SvOK(provider)) {
-    MP_TRACE_d(MP_FUNC,
+    MP_TRACE_a(MP_FUNC,
                "Apache::AuthenHook - provider not found\n");
 
     return AUTH_GENERAL_ERROR;
@@ -111,7 +111,7 @@ static int call_provider(request_rec *r, const char *type,
   handler = modperl_handler_new(r->pool, SvPV_nolen(provider));
   status  = modperl_callback(aTHX_ handler, r->pool, r, r->server, args);
 
-  MP_TRACE_d(MP_FUNC, 
+  MP_TRACE_a(MP_FUNC, 
              "Apache::AuthenHook - provider returned %d\n", 
              status);
 
@@ -134,7 +134,7 @@ static int call_provider(request_rec *r, const char *type,
       *rethash = SvPV_nolen(hash);
     }
     else {
-      MP_TRACE_d(MP_FUNC, 
+      MP_TRACE_a(MP_FUNC, 
                  "Apache::AuthenHook - returned hash not a string\n");
 
       status = AUTH_GENERAL_ERROR;
@@ -158,7 +158,7 @@ static authn_status check_password(request_rec *r, const char *user,
 {
   int status;
 
-  MP_TRACE_d(MP_FUNC, 
+  MP_TRACE_a(MP_FUNC, 
              "Apache::AuthenHook - calling Basic handler\n");
 
   status = call_provider(r, "basic", user, password, NULL);
@@ -173,7 +173,7 @@ static authn_status check_password(request_rec *r, const char *user,
       ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
                     "Apache::AuthenHook - yikes! something bad happened!");
       ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r,
-                    "Apache::AuthenHook - try running with PerlTrace d");
+                    "Apache::AuthenHook - try running with PerlTrace a");
 
       /* status is already AUTH_GENERAL_ERROR */
       break;
@@ -210,7 +210,7 @@ static authn_status get_realm_hash(request_rec *r, const char *user,
 {
   int status;
 
-  MP_TRACE_d(MP_FUNC, 
+  MP_TRACE_a(MP_FUNC, 
              "Apache::AuthenHook - calling Digest handler\n");
 
   status = call_provider(r, "digest", user, realm, &*rethash);
@@ -220,7 +220,7 @@ static authn_status get_realm_hash(request_rec *r, const char *user,
       ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
                     "Apache::AuthenHook - yikes! something bad happened!");
       ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r,
-                    "Apache::AuthenHook - try running with PerlTrace d");
+                    "Apache::AuthenHook - try running with PerlTrace a");
       break;
 
     case OK:
@@ -266,7 +266,7 @@ register_provider(provider)
 
   CODE:
 
-    MP_TRACE_d(MP_FUNC, 
+    MP_TRACE_a(MP_FUNC, 
                "Apache::AuthenHook - registering provider %s\n", 
                SvPV_nolen(provider));
 

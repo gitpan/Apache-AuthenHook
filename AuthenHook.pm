@@ -12,7 +12,7 @@ use Apache::Const -compile => qw(OK DECLINE_CMD OR_AUTHCFG RAW_ARGS);
 use strict;
 
 our @ISA = qw(DynaLoader);
-our $VERSION = '2.00_01';
+our $VERSION = '2.00_03';
 
 __PACKAGE__->bootstrap($VERSION);
 
@@ -252,7 +252,8 @@ see the files in the test suite for more examples.
 =head1 NOTES
 
 This has been tested under the prefork MPM only, using 
-mostly Perl 5.9.0 (as well as some 5.8.0) - YMMV.
+mostly Perl 5.9.0 (as well as some 5.8.0).  It will not
+work under threaded MPMs - soon, just not yet.
 
 =head1 FEATURES/BUGS
 
