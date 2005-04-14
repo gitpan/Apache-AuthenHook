@@ -1,0 +1,2 @@
+grant access to the AUTH_* contants now that mod_perl doesn't translate
+handler return codes to HTTP status values

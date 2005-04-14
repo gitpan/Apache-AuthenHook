@@ -36,18 +36,18 @@ static int call_provider(request_rec *r, const char *type,
 
     /* first, get the config object ($cfg) populated by the Perl
      * directive handlers.  This returns the same object as 
-     * Apache::Module->get_config().
+     * Apache2::Module->get_config().
      */
     cfg = modperl_module_config_get_obj(aTHX_ newSVpvn("Apache::AuthenHook", 18), 
                                         r->server, r->per_dir_config);
-  
+
     if (! cfg) {
       MP_TRACE_a(MP_FUNC, 
                  "Apache::AuthenHook - config object not found\n");
-  
+
       return AUTH_GENERAL_ERROR;
     }
-  
+
     /* isolate $cfg->{basic} */
     svp = hv_fetch((HV *)SvRV(cfg), type, strlen(type), FALSE);
 
@@ -72,9 +72,9 @@ static int call_provider(request_rec *r, const char *type,
 
     /* set the note so we don't initialize again for this (sub)request */
     apr_table_setn(r->notes, "AUTHEN_HOOK_INIT_REQUEST", "1");
-  
+
   }  /* end once per-request processing */
-    
+
   /* shift off the next provider from the provider array */
   provider = av_shift(providers);
 
@@ -87,7 +87,7 @@ static int call_provider(request_rec *r, const char *type,
 
   /* populate @_ for the callback, starting with $r */
   modperl_handler_make_args(aTHX_ &args,
-                           "Apache::RequestRec", r, NULL);
+                           "Apache2::RequestRec", r, NULL);
 
   /* now for the username and password(Basic) or realm(Digest) */
   av_push(args, newSVpv(user, 0));
@@ -167,7 +167,7 @@ static authn_status check_password(request_rec *r, const char *user,
    * what HTTP_ status the Perl provider returned.  and yes, 
    * this routine could be reused if I wanted to be less specific
    * with the log messages...  */
- 
+
   switch(status) {
     case AUTH_GENERAL_ERROR:
       ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
@@ -177,7 +177,7 @@ static authn_status check_password(request_rec *r, const char *user,
 
       /* status is already AUTH_GENERAL_ERROR */
       break;
-  
+
     case OK:
       ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r,
                     "Apache::AuthenHook - user '%s', password '%s' verified",
@@ -193,7 +193,7 @@ static authn_status check_password(request_rec *r, const char *user,
 
       status = AUTH_USER_NOT_FOUND;
       break;
- 
+
     default:
       ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r,
                     "Apache::AuthenHook - user '%s', password '%s' denied",
@@ -238,7 +238,7 @@ static authn_status get_realm_hash(request_rec *r, const char *user,
 
       status = AUTH_USER_NOT_FOUND;
       break;
- 
+
     default:
       ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r,
                     "Apache::AuthenHook - user '%s' in realm '%s' denied",

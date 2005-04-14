@@ -4,40 +4,36 @@ use 5.008;
 
 use DynaLoader ();
 
-use mod_perl 1.99_10;     # DECLINE_CMD and $parms->info support
-use Apache::CmdParms ();  # $parms->info
+use Apache2::Module ();    # add()
+use Apache2::CmdParms ();  # $parms->info
 
-use Apache::Const -compile => qw(OK DECLINE_CMD OR_AUTHCFG RAW_ARGS);
+use Apache2::Const -compile => qw(OK DECLINE_CMD OR_AUTHCFG ITERATE);
 
 use strict;
 
 our @ISA = qw(DynaLoader);
-our $VERSION = '2.00_03';
+our $VERSION = '2.00_04';
 
 __PACKAGE__->bootstrap($VERSION);
 
-# yes, the auth modules use ITERATE and not RAW_ARGS,
-# but returning DECLINE_CMD at any point in ITERATE
-# means we won't be called again.  sounds like something
-# that needs fixing...
-
-our @APACHE_MODULE_COMMANDS = (
+my @directives = (
   { name         => 'AuthDigestProvider',
     errmsg       => 'specify the auth providers for a directory or location',
-    args_how     => Apache::RAW_ARGS,
-    req_override => Apache::OR_AUTHCFG,
+    args_how     => Apache2::Const::ITERATE,
+    req_override => Apache2::Const::OR_AUTHCFG,
     cmd_data     => 'digest' },
 
   { name         => 'AuthBasicProvider',
     errmsg       => 'specify the auth providers for a directory or location',
-    args_how     => Apache::RAW_ARGS,
-    req_override => Apache::OR_AUTHCFG,
+    args_how     => Apache2::Const::ITERATE,
+    req_override => Apache2::Const::OR_AUTHCFG,
     func         => 'AuthDigestProvider',
     cmd_data     => 'basic' },
 );
 
-sub AuthDigestProvider {
+Apache2::Module::add(__PACKAGE__, \@directives);
 
+sub AuthDigestProvider {
   my ($cfg, $parms, $args) = @_;
 
   my @providers = split ' ', $args;
@@ -58,7 +54,7 @@ sub AuthDigestProvider {
   }
 
   # pass the directive back to Apache "unprocessed"
-  return Apache::DECLINE_CMD;
+  return Apache2::Const::DECLINE_CMD;
 }
 
 sub DIR_CREATE {
@@ -104,7 +100,7 @@ Apache::AuthenHook - Perl API for Apache 2.1 authentication
     AuthName foorealm
 
     AuthBasicProvider My::OtherProvider::basic file My::BasicProvider
-  
+
     AuthUserFile realm1
   </Location>
 
@@ -167,7 +163,7 @@ means no access.
 
 Here is a simple My::DigestProvider
 
-  use Apache::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
+  use Apache2::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
 
   sub handler {
 
@@ -176,16 +172,16 @@ Here is a simple My::DigestProvider
     # user1 at realm1 is found - pass to mod_auth_digest
     if ($user eq 'user1' && $realm eq 'realm1') {
       $$hash = 'eee52b97527306e9e8c4613b7fa800eb';
-      return Apache::OK;
+      return Apache2::Const::OK;
     }
 
     # user2 is denied outright
     if ($user eq 'user2' && $realm eq 'realm1') {
-      return Apache::HTTP_UNAUTHORIZED;
+      return Apache2::Const::HTTP_UNAUTHORIZED;
     }
 
     # all others are passed along to the next provider
-    return Apache::DECLINED;
+    return Apache2::Const::DECLINED;
   }
 
 isn't that easy?
@@ -214,13 +210,13 @@ The steps are remarkably similar for Basic authentication, first
     AuthName foorealm
 
     AuthBasicProvider My::BasicProvider file
-  
+
     AuthUserFile realm1
   </Location>
 
 then
 
-  use Apache::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
+  use Apache2::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
 
   sub handler {
 
@@ -228,16 +224,16 @@ then
 
     # user1/basic1 is ok
     if ($user eq 'user1' && $password eq 'basic1') {
-      return Apache::OK;
+      return Apache2::Const::OK;
     }
-  
+
     # user2 is denied outright
     if ($user eq 'user2') {
-      return Apache::HTTP_UNAUTHORIZED;
+      return Apache2::Const::HTTP_UNAUTHORIZED;
     }
 
     # all others are passed along to the next provider
-    return Apache::DECLINED;
+    return Apache2::Const::DECLINED;
   }
 
 In the case of Basic authentication, the return codes mean

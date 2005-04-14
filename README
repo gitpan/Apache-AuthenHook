@@ -24,7 +24,7 @@ SYNOPSIS
     AuthName foorealm
 
     AuthBasicProvider My::OtherProvider::basic file My::BasicProvider
-  
+
     AuthUserFile realm1
   </Location>
 
@@ -87,7 +87,7 @@ means no access.
 
 Here is a simple My::DigestProvider
 
-  use Apache::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
+  use Apache2::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
 
   sub handler {
 
@@ -96,16 +96,16 @@ Here is a simple My::DigestProvider
     # user1 at realm1 is found - pass to mod_auth_digest
     if ($user eq 'user1' && $realm eq 'realm1') {
       $$hash = 'eee52b97527306e9e8c4613b7fa800eb';
-      return Apache::OK;
+      return Apache2::Const::OK;
     }
 
     # user2 is denied outright
     if ($user eq 'user2' && $realm eq 'realm1') {
-      return Apache::HTTP_UNAUTHORIZED;
+      return Apache2::Const::HTTP_UNAUTHORIZED;
     }
 
     # all others are passed along to the next provider
-    return Apache::DECLINED;
+    return Apache2::Const::DECLINED;
   }
 
 isn't that easy?
@@ -134,13 +134,13 @@ The steps are remarkably similar for Basic authentication, first
     AuthName foorealm
 
     AuthBasicProvider My::BasicProvider file
-  
+
     AuthUserFile realm1
   </Location>
 
 then
 
-  use Apache::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
+  use Apache2::Const -compile => qw(OK DECLINED HTTP_UNAUTHORIZED);
 
   sub handler {
 
@@ -148,16 +148,16 @@ then
 
     # user1/basic1 is ok
     if ($user eq 'user1' && $password eq 'basic1') {
-      return Apache::OK;
+      return Apache2::Const::OK;
     }
-  
+
     # user2 is denied outright
     if ($user eq 'user2') {
-      return Apache::HTTP_UNAUTHORIZED;
+      return Apache2::Const::HTTP_UNAUTHORIZED;
     }
 
     # all others are passed along to the next provider
-    return Apache::DECLINED;
+    return Apache2::Const::DECLINED;
   }
 
 In the case of Basic authentication, the return codes mean
@@ -171,7 +171,7 @@ see the files in the test suite for more examples.
 
 NOTES
 
-This has been tested under the prefork MPM only, using
+This has been tested under the prefork MPM only, using 
 mostly Perl 5.9.0 (as well as some 5.8.0).  It will not
 work under threaded MPMs - soon, just not yet.
 

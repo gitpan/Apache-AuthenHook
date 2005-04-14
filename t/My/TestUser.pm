@@ -1,8 +1,10 @@
 package My::TestUser;
 
-use Apache::RequestRec;
+use Apache2::RequestRec;
+use Apache2::RequestUtil;
+use Apache2::Access;
 
-use Apache::Const -compile => qw(OK HTTP_UNAUTHORIZED);
+use Apache2::Const -compile => qw(OK HTTP_UNAUTHORIZED);
 
 use strict;
 
@@ -10,13 +12,18 @@ sub handler {
 
   my $r = shift;
 
+  warn "trying ", $r->uri;
+  warn "auth type ", $r->ap_auth_type;
+  warn "auth type 2", $r->auth_type;
   if ($r->ap_auth_type eq 'Digest') {
 
    my ($user, $realm, $hash) = @_;
 
+   warn "inside";
    if ($user eq 'testuser' && $realm eq 'realm1') {
      $$hash = '0a2e8a13afd0ea7b7e78cc22725bf06a';
-     return Apache::OK;
+     warn "ok";
+     return Apache2::Const::OK;
    }
   }
   else {
@@ -24,11 +31,11 @@ sub handler {
    my ($user, $password) = @_;
 
    if ($user eq 'testuser' && $password eq 'testpass') {
-     return Apache::OK;
+     return Apache2::Const::OK;
    }
   }
 
-  return Apache::HTTP_UNAUTHORIZED;
+  return Apache2::Const::HTTP_UNAUTHORIZED;
 }
 
 1;
